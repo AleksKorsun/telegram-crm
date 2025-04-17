@@ -135,7 +135,9 @@ async function handleNewTopic(ctx) {
     
     if (existingProject) {
       // Если проект уже существует, просто показываем кнопку CRM
-      const crmUrl = `${config.webView.url}?projectId=${existingProject.id}`;
+      // Добавляем название топика в URL для отображения в заголовке CRM
+      const encodedTopicName = encodeURIComponent(topicName);
+      const crmUrl = `${config.webView.url}?projectId=${existingProject.id}&topicName=${encodedTopicName}`;
       
       ctx.reply(
         `Проект "${existingProject.title}" уже существует.`,
@@ -153,7 +155,9 @@ async function handleNewTopic(ctx) {
       const newProject = await createProject(topicName, uniqueChatId);
       
       // Формируем URL для перехода в CRM
-      const crmUrl = `${config.webView.url}?projectId=${newProject.id}`;
+      // Добавляем название топика в URL для отображения в заголовке CRM
+      const encodedTopicName = encodeURIComponent(topicName);
+      const crmUrl = `${config.webView.url}?projectId=${newProject.id}&topicName=${encodedTopicName}`;
       
       // Отправляем сообщение с кнопкой для открытия WebView
       // Используем прямой формат кнопки для большей совместимости

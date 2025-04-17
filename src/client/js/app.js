@@ -6,9 +6,15 @@
 const tg = window.Telegram.WebApp;
 tg.expand(); // Раскрываем WebApp на весь экран
 
+// Используем тему Telegram
+document.documentElement.style.setProperty('--telegram-primary', tg.themeParams.button_color || '#2AABEE');
+document.documentElement.style.setProperty('--telegram-text', tg.themeParams.text_color || '#000000');
+document.documentElement.style.setProperty('--telegram-bg', tg.themeParams.bg_color || '#F0F2F5');
+
 // Получаем ID проекта из URL
 const urlParams = new URLSearchParams(window.location.search);
 const projectId = urlParams.get('projectId');
+const topicName = urlParams.get('topicName'); // Получаем название топика из URL если есть
 
 // Статусы проекта и оборудования
 const PROJECT_STATUSES = [
@@ -81,6 +87,12 @@ async function loadProject() {
       return;
     }
     
+    // Если есть название топика, показываем его сразу
+    if (topicName) {
+      document.getElementById('project-title').textContent = topicName;
+      document.title = topicName;
+    }
+    
     // Получаем данные проекта
     const data = await API.projects.getById(projectId);
     
@@ -103,7 +115,10 @@ async function loadProject() {
 
 // Отображение данных проекта
 function displayProject(project) {
-  document.getElementById('project-title').textContent = project.title;
+  // Если есть название топика в URL, используем его вместо названия проекта
+  const projectTitle = topicName || project.title;
+  document.title = projectTitle; // Обновляем заголовок страницы
+  document.getElementById('project-title').textContent = projectTitle;
   document.getElementById('project-id').textContent = `ID: ${project.id}`;
   
   const statusElement = document.getElementById('project-status');
