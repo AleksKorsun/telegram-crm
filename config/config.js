@@ -3,46 +3,37 @@
  */
 
 // Определяем, работаем ли мы на Glitch или локально
-const isGlitch = process.env.PROJECT_DOMAIN || false;
+const isGlitch = !!process.env.PROJECT_DOMAIN;
 const projectDomain = isGlitch ? `https://${process.env.PROJECT_DOMAIN}.glitch.me` : 'http://localhost:3000';
 
 module.exports = {
   // Настройки сервера
   server: {
-    port: 3000,
-    host: 'localhost',
+    port: isGlitch ? process.env.PORT : 3000,
+    host: isGlitch ? '0.0.0.0' : 'localhost',
     apiPrefix: '/api',
   },
   
   // Настройки базы данных
   database: {
-    // SQLite для MVP
     client: 'sqlite3',
     connection: {
-      filename: isGlitch ? '.data/telegram-crm.sqlite' : '/home/alex/telegram-crm/database/telegram-crm.sqlite'
+      // 👇 Правильный путь к базе на Glitch
+      filename: isGlitch
+        ? '/app/database/telegram-crm.sqlite'
+        : '/home/alex/telegram-crm/database/telegram-crm.sqlite'
     },
     useNullAsDefault: true,
-    
-    // Для будущего перехода на PostgreSQL
-    // client: 'pg',
-    // connection: {
-    //   host: 'localhost',
-    //   port: 5432,
-    //   user: 'username',
-    //   password: 'password',
-    //   database: 'telegram_crm'
-    // }
   },
   
   // Настройки Telegram бота
   telegram: {
-    token: '7738846745:AAGW66wsQGJm_N9ZYAAKNrWsfSD5SaO5O1I', // Токен существующего бота
+    token: '7738846745:AAGW66wsQGJm_N9ZYAAKNrWsfSD5SaO5O1I',
     webhook: {
-      enabled: false, // true для production, false для разработки (использует polling)
-      url: 'https://telegram-crm.loca.lt/app', // HTTPS URL для WebView в Telegram
+      enabled: false,
+      url: `${projectDomain}/app`,
       port: 8443
     },
-    // Настройки уведомлений
     notifications: {
       projectCreated: true,
       equipmentAdded: true,
@@ -51,13 +42,13 @@ module.exports = {
     }
   },
   
-  // Настройки WebView
+  // WebView
   webView: {
-    url: `${projectDomain}/app`, // Автоматически определяется в зависимости от окружения
-    allowedOrigins: ['https://t.me'] // Разрешенные источники для WebView
+    url: `${projectDomain}/app`,
+    allowedOrigins: ['https://t.me']
   },
   
-  // Настройки для отправки email (опционально)
+  // Email
   email: {
     enabled: false,
     smtp: {
@@ -72,7 +63,7 @@ module.exports = {
     from: 'CRM <crm@example.com>'
   },
   
-  // Предопределенные статусы
+  // Статусы
   statuses: {
     project: [
       'Новый',
@@ -90,3 +81,4 @@ module.exports = {
     ]
   }
 };
+
