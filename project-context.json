@@ -1,0 +1,203 @@
+{
+  "projectName": "telegram-crm-integration",
+  "version": "1.0.0",
+  "description": "Мини-CRM с базовой интеграцией Telegram. При создании нового чата/топика создаётся проект, есть таблица оборудования, история действий и уведомления в чат.",
+  "models": {
+    "Project": {
+      "tableName": "projects",
+      "fields": [
+        { "name": "id", "type": "integer", "primaryKey": true, "autoIncrement": true },
+        { "name": "title", "type": "string", "description": "Заголовок проекта / Название топика" },
+        { "name": "chatId", "type": "string", "description": "ID чата или топика из Telegram" },
+        { "name": "status", "type": "string", "description": "Текущий статус проекта" },
+        { "name": "createdAt", "type": "datetime", "default": "now" },
+        { "name": "updatedAt", "type": "datetime", "default": "now" }
+      ]
+    },
+    "Equipment": {
+      "tableName": "equipment",
+      "fields": [
+        { "name": "id", "type": "integer", "primaryKey": true, "autoIncrement": true },
+        { "name": "projectId", "type": "integer", "description": "Связь с projects.id" },
+        { "name": "model", "type": "string", "description": "Наименование/модель оборудования" },
+        { "name": "quantity", "type": "integer", "description": "Количество" },
+        { "name": "itemStatus", "type": "string", "description": "Статус позиции (напр. заказано, доставлено)" },
+        { "name": "expectedDate", "type": "datetime", "description": "Ожидаемая дата поставки (необязательно)" },
+        { "name": "notes", "type": "text", "description": "Примечания к позиции" },
+        { "name": "createdAt", "type": "datetime", "default": "now" },
+        { "name": "updatedAt", "type": "datetime", "default": "now" }
+      ]
+    },
+    "HistoryLog": {
+      "tableName": "history_logs",
+      "fields": [
+        { "name": "id", "type": "integer", "primaryKey": true, "autoIncrement": true },
+        { "name": "projectId", "type": "integer", "description": "К какому проекту относится запись" },
+        { "name": "actionType", "type": "string", "description": "Тип действия (create, update, sendEmail и т.д.)" },
+        { "name": "message", "type": "text", "description": "Краткое описание события" },
+        { "name": "createdAt", "type": "datetime", "default": "now" }
+      ]
+    }
+  },
+  "api": {
+    "basePath": "/api",
+    "endpoints": [
+      {
+        "method": "POST",
+        "path": "/projects",
+        "description": "Создать новый проект (привязка к новому топику/чату Telegram)",
+        "requestBody": {
+          "title": "string",
+          "chatId": "string"
+        },
+        "response": {
+          "id": "number",
+          "title": "string",
+          "chatId": "string",
+          "status": "string"
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/projects/:id",
+        "description": "Получить данные одного проекта, включая список оборудования и историю",
+        "response": {
+          "project": {
+            "id": "number",
+            "title": "string",
+            "chatId": "string",
+            "status": "string"
+          },
+          "equipmentList": [
+            {
+              "id": "number",
+              "model": "string",
+              "quantity": "number",
+              "itemStatus": "string"
+            }
+          ],
+          "history": [
+            {
+              "id": "number",
+              "actionType": "string",
+              "message": "string"
+            }
+          ]
+        }
+      },
+      {
+        "method": "PATCH",
+        "path": "/projects/:id/status",
+        "description": "Изменить статус проекта",
+        "requestBody": {
+          "status": "string"
+        },
+        "response": {
+          "success": "boolean",
+          "updatedStatus": "string"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/projects/:id/equipment",
+        "description": "Добавить оборудование к проекту",
+        "requestBody": {
+          "model": "string",
+          "quantity": "number",
+          "itemStatus": "string",
+          "expectedDate": "datetime (optional)",
+          "notes": "string (optional)"
+        },
+        "response": {
+          "id": "number",
+          "projectId": "number",
+          "model": "string",
+          "quantity": "number",
+          "itemStatus": "string"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/projects/:id/history",
+        "description": "Добавить запись в историю (например, комментарий)",
+        "requestBody": {
+          "actionType": "string",
+          "message": "string"
+        },
+        "response": {
+          "id": "number",
+          "projectId": "number",
+          "actionType": "string",
+          "message": "string"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/projects/:id/sendEmail",
+        "description": "Отправить email от имени проекта (MVP)",
+        "requestBody": {
+          "to": "string",
+          "subject": "string",
+          "body": "text"
+        },
+        "response": {
+          "success": "boolean",
+          "info": "string"
+        }
+      }
+    ]
+  },
+  "telegramBot": {
+    "webhookUrl": "/bot/webhook",
+    "commands": [
+      {
+        "command": "/startproject",
+        "description": "Создаёт новый проект для текущего чата/топика"
+      },
+      {
+        "command": "/showproject",
+        "description": "Выдаёт кнопку/ссылку на WebView для текущего проекта"
+      }
+    ],
+    "notifications": {
+      "onProjectCreated": true,
+      "onEquipmentAdded": true,
+      "onStatusChanged": true,
+      "onEmailSent": true
+    }
+  },
+  "webView": {
+    "urlExample": "https://yourdomain.com/app?projectId={id}",
+    "pages": [
+      {
+        "name": "ProjectDetailsPage",
+        "components": [
+          "ProjectHeader",
+          "EquipmentTable",
+          "StatusIndicator",
+          "HistoryTimeline",
+          "SendEmailForm"
+        ]
+      }
+    ]
+  },
+  "dependencies": {
+    "server": [
+      "express or fastify or nestjs",
+      "database driver (postgres/mysql/sqlite)",
+      "nodemailer (для отправки email) or аналог"
+    ],
+    "client": [
+      "react or vue or vanilla js",
+      "axios/fetch (для запросов к API)"
+    ],
+    "bot": [
+      "telegraf or node-telegram-bot-api"
+    ]
+  },
+  "scripts": {
+    "startServer": "node server.js",
+    "startBot": "node bot.js",
+    "dev": "concurrently run server & bot watchers"
+  }
+}

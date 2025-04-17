@@ -1,0 +1,160 @@
+/* Основные стили для Telegram CRM */
+
+/* Адаптация для Telegram WebApp */
+body {
+    background-color: var(--tg-theme-bg-color, #f8f9fa);
+    color: var(--tg-theme-text-color, #212529);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.card, .modal-content {
+    background-color: var(--tg-theme-secondary-bg-color, #ffffff);
+    border-color: var(--tg-theme-hint-color, #dee2e6);
+}
+
+.btn-primary {
+    background-color: var(--tg-theme-button-color, #0d6efd);
+    border-color: var(--tg-theme-button-color, #0d6efd);
+    color: var(--tg-theme-button-text-color, #ffffff);
+}
+
+.btn-primary:hover {
+    background-color: var(--tg-theme-button-color, #0b5ed7);
+    border-color: var(--tg-theme-button-color, #0b5ed7);
+    filter: brightness(90%);
+}
+
+/* Стили для статусов проекта */
+#project-status {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.8rem;
+}
+
+.status-new {
+    background-color: #6c757d;
+}
+
+.status-ordered {
+    background-color: #0d6efd;
+}
+
+.status-delivered {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.status-installation {
+    background-color: #fd7e14;
+}
+
+.status-completed {
+    background-color: #198754;
+}
+
+/* Стили для статусов оборудования */
+.equipment-status {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 0.25rem;
+}
+
+.status-ordered {
+    background-color: #cfe2ff;
+    color: #084298;
+}
+
+.status-in-transit {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+
+.status-delivered {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.status-installed {
+    background-color: #198754;
+    color: #ffffff;
+}
+
+.status-issue {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+/* Стили для временной шкалы истории */
+.timeline {
+    position: relative;
+    padding: 1rem 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    height: 100%;
+    width: 2px;
+    background-color: var(--tg-theme-hint-color, #dee2e6);
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 2.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0.7rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background-color: var(--tg-theme-button-color, #0d6efd);
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-date {
+    font-size: 0.8rem;
+    color: var(--tg-theme-hint-color, #6c757d);
+}
+
+.timeline-content {
+    padding: 0.75rem;
+    background-color: var(--tg-theme-secondary-bg-color, #ffffff);
+    border-radius: 0.25rem;
+    border: 1px solid var(--tg-theme-hint-color, #dee2e6);
+}
+
+/* Адаптивность для маленьких экранов */
+@media (max-width: 576px) {
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    h3 {
+        font-size: 1.2rem;
+    }
+}
